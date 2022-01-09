@@ -14,11 +14,13 @@ db.once('open', () => {
   bcrypt
       .genSalt(10)
       .then(salt => bcrypt.hash(SEED_USER.password, salt))
-      .then(hash => User.create({
-        name: SEED_USER.name,
-        email: SEED_USER.email,
-        password: hash
-      }))
+      .then(hash => User.findOne({email : SEED_USER.email}, (err, result) => {
+        return result ? result : User.create({
+            name: SEED_USER.name,
+            email: SEED_USER.email,
+            password: hash
+        })
+    }))
       .then(user => {
         const userId = user._id
         return Promise.all( Array.from(
